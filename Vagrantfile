@@ -7,7 +7,7 @@ CLUSTER_CONFIG = {
 }
 
 # method to setup containerd and kubernetes tools (kubeadm, kubelet, kubectl, kubernetes-cni)
-def provision_cri_and_kubernetes_tools(vm)
+def provision_cri_and_provision_kubernetes_tools(vm)
   vm.vm.provision "shell", inline: <<-'SCRIPT'
     echo "Configuring Linux Kernel Settings..."
     sudo cp /vagrant/files/99-kubernetes-cri.conf \
@@ -34,6 +34,15 @@ def provision_cri_and_kubernetes_tools(vm)
   SCRIPT
 end
 
+def install_cri_tools(vm)
+  vm.vm.provision "shell", inline: <<-'SCRIPT'
+    echo "Installing cri-tools for crictl..."
+    sudo apt install -y cri-tools
+
+    sudo cp /home/vagrant/github/cka/crictl.yaml /etc/crictl.yaml
+  SCRIPT
+end
+
 Vagrant.configure("2") do |config|
   # Common configuration
   CLUSTER_CONFIG.each do |name, properties|
@@ -52,7 +61,8 @@ Vagrant.configure("2") do |config|
       end
 
       # Install CRI and K8s tools on each node
-      provision_cri_and_kubernetes_tools(node)
+      provision_cri_and_provision_kubernetes_tools(node)
+      install_cri_tools(node)
     end
   end
 
