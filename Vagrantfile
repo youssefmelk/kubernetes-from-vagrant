@@ -68,6 +68,7 @@ Vagrant.configure("2") do |config|
       # Install CRI and K8s tools on each node
       provision_cri_and_provision_kubernetes_tools(node)
       install_cri_tools(node)
+      install_etcd_client(node)
     end
   end
 
