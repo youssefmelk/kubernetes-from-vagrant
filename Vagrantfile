@@ -30,7 +30,6 @@ def provision_cri_and_provision_kubernetes_tools(vm)
     
     echo "Installing the tools of the SECOND-LATEST version of Kubernetes (kubeadm, kubelet, kubectl, kubernetes-cni)..."
     sudo /home/vagrant/github/cka/setup-kubetools-previousversion.sh
-    
   SCRIPT
 end
 
@@ -42,6 +41,12 @@ def install_cri_tools(vm)
     sudo cp /home/vagrant/github/cka/crictl.yaml /etc/crictl.yaml
   SCRIPT
 end
+
+def install_etcd_client(vm)
+  vm.vm.provision "shell", inline: <<-'SCRIPT'
+    echo "Installing etcd-client for etcdctl..."
+    sudo apt-get install -y etcd-client
+  SCRIPT
 
 Vagrant.configure("2") do |config|
   # Common configuration
