@@ -47,6 +47,7 @@ def install_etcd_client(vm)
     echo "Installing etcd-client for etcdctl..."
     sudo apt-get install -y etcd-client
   SCRIPT
+end
 
 Vagrant.configure("2") do |config|
   # Common configuration
