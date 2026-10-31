@@ -3,7 +3,7 @@ IMAGE_VERSION = "202510.26.0"
 CLUSTER_CONFIG = {
   "control1" => { :ip => "192.168.56.10", :cpus => 2, :mem => 2048 },
   "worker1" => { :ip => "192.168.56.11", :cpus => 1, :mem => 2048 },
-  "worker2" => { :ip => "192.168.56.12", :cpus => 1, :mem => 2048 }
+  "worker2" => { :ip => "192.168.56.12", :cpus => 2, :mem => 4096 }
 }
 
 # method to setup containerd and kubernetes tools (kubeadm, kubelet, kubectl, kubernetes-cni)
