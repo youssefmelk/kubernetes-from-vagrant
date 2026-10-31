@@ -1,5 +1,13 @@
+IMAGE = "bento/ubuntu-22.04"
+IMAGE_VERSION = "202510.26.0"
+CLUSTER_CONFIG = {
+  "control1" => { :ip => "192.168.56.10", :cpus => 2, :mem => 2048 },
+  "worker1" => { :ip => "192.168.56.11", :cpus => 1, :mem => 2048 },
+  "worker2" => { :ip => "192.168.56.12", :cpus => 2, :mem => 4096 }
+}
+
 # method to setup containerd and kubernetes tools (kubeadm, kubelet, kubectl, kubernetes-cni)
-def provision_cri_and_kubernetes_tools(vm)
+def provision_cri_and_provision_kubernetes_tools(vm)
   vm.vm.provision "shell", inline: <<-'SCRIPT'
     echo "Configuring Linux Kernel Settings..."
     sudo cp /vagrant/files/99-kubernetes-cri.conf \
@@ -20,33 +28,49 @@ def provision_cri_and_kubernetes_tools(vm)
     echo "Installing the CRI..."
     sudo /home/vagrant/github/cka/setup-container.sh
     
-    echo "Installing the tools of the SECOND-LATEST version of Kubernetes (kubeadm, kubelet, kubectl, kubernetes-cni)..."
+    echo "Installing the tools of the PREVIOUS version of Kubernetes (kubeadm, kubelet, kubectl, kubernetes-cni)..."
     sudo /home/vagrant/github/cka/setup-kubetools-previousversion.sh
-    
+  SCRIPT
+end
+
+def install_cri_tools(vm)
+  vm.vm.provision "shell", inline: <<-'SCRIPT'
+    echo "Installing cri-tools for crictl..."
+    sudo apt install -y cri-tools
+
+    sudo cp /home/vagrant/github/cka/crictl.yaml /etc/crictl.yaml
+  SCRIPT
+end
+
+def install_etcd_client(vm)
+  vm.vm.provision "shell", inline: <<-'SCRIPT'
+    echo "Installing etcd-client for etcdctl..."
+    sudo apt-get install -y etcd-client
   SCRIPT
 end
 
 Vagrant.configure("2") do |config|
   # Common configuration
-  config.vm.box = "bento/ubuntu-22.04"
-  config.vm.box_version = "202510.26.0"
-  
-  # control1
-  config.vm.define "control1" do |control1|
-    control1.vm.hostname= "control1"
-    provision_cri_and_kubernetes_tools(control1)
+  CLUSTER_CONFIG.each do |name, properties|
+    config.vm.define name do |node|
+      node.vm.box = IMAGE
+      node.vm.box_version = IMAGE_VERSION
+      node.vm.hostname= name
+
+      # Assign static IP address to each VM
+      node.vm.network "private_network", ip: properties[:ip]
+
+      # Hardware resource allocation
+      node.vm.provider "virtualbox" do |vb|
+        vb.memory = properties[:mem]
+        vb.cpus = properties[:cpus]
+      end
+
+      # Install CRI and K8s tools on each node
+      provision_cri_and_provision_kubernetes_tools(node)
+      install_cri_tools(node)
+      install_etcd_client(node)
+    end
   end
 
-  # worker1
-  config.vm.define "worker1" do |worker1|
-    worker1.vm.hostname = "worker1"
-    provision_cri_and_kubernetes_tools(worker1)
-  end
-  
-  # worker2
-  config.vm.define "worker2" do |worker2|
-    worker2.vm.hostname = "worker2"
-    provision_cri_and_kubernetes_tools(worker2)
-  end
-  
 end
