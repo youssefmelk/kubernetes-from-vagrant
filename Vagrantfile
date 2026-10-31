@@ -28,7 +28,7 @@ def provision_cri_and_provision_kubernetes_tools(vm)
     echo "Installing the CRI..."
     sudo /home/vagrant/github/cka/setup-container.sh
     
-    echo "Installing the tools of the SECOND-LATEST version of Kubernetes (kubeadm, kubelet, kubectl, kubernetes-cni)..."
+    echo "Installing the tools of the PREVIOUS version of Kubernetes (kubeadm, kubelet, kubectl, kubernetes-cni)..."
     sudo /home/vagrant/github/cka/setup-kubetools-previousversion.sh
   SCRIPT
 end
