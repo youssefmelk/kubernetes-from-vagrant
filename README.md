@@ -24,6 +24,11 @@ This project does **not** automatically:
 3. Set up external communication with the cluster using a ["kubeconfig" file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/).
 4. Install a CNI (Container Network Interface) Plugin like Calico or Cilium.
 
+## Prerequisites
+The following tools must be installed in order to use this project:
+1. [Install Virtualbox](https://www.virtualbox.org/wiki/Downloads).
+2. [Install Vagrant](https://developer.hashicorp.com/vagrant/install).
+
 ## Get Started
 
 The project can be spun up with a simple command on your terminal:
