@@ -23,6 +23,7 @@ This project does **not** automatically:
 2. Attach the Worker Nodes to the cluster.
 3. Set up external communication with the cluster using a ["kubeconfig" file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/).
 4. Install a CNI (Container Network Interface) Plugin like Calico or Cilium.
+5. Install a metrics provider, which is needed to use Horizontal Pod Autoscalers (HPAs). One option is to install the [Kubernetes Metrics Server](https://github.com/kubernetes-sigs/metrics-server#installation).
 
 ## Prerequisites
 The following tools must be installed in order to use this project:
